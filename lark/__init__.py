@@ -13,6 +13,7 @@ from .lexer import Token
 from .tree import ParseTree, Tree
 from .utils import logger, TextSlice
 from .visitors import Discard, Transformer, Transformer_NonRecursive, Visitor, v_args
+from .forest_to_html_dot_visitor import ForestToPyDotVisitor, ForestToHtmlDotVisitor
 
 __version__: str = "1.2.2"
 
