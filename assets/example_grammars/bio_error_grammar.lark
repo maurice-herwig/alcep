@@ -1,0 +1,1184 @@
+undefinedhypothese: einfach
+   | komplex
+
+einfach: unspezifisch
+   | spezifisch
+   | konditional
+
+komplex: einfach,modal
+   | vergleich
+
+unspezifisch: E_der|die|das|den,unspezvariable,unspezabhaengigkeit,E_der|die|das|den,unspezvariable
+
+spezifisch: E_der|die|das|den,unspezvariable,spezabhaengigkeit,spezAdjektiv,E_bei,unspezvariable
+   | E_bei,Adjektiv,unspezvariable,spezabhaengigkeit,E_der|die|das|den,unspezvariable
+   | E_bei,spezUV,spezabhaengigkeit,E_der|die|das|den,unspezvariable,spezAdjektiv
+   | E_der|die|das|den,unspezvariable,spezabhaengigkeit,spezAdjektiv,E_bei,spezUV
+
+konditional: wenn,E_der|die|das|den,unspezvariable,AdjektivStar,spezabhaengigkeit,E_, dann,spezabhaengigkeit,E_der|die|das|den,unspezvariable,spezAdjektiv
+   | E_je,Adjektiv,E_der|die|das|den,unspezvariable,spezabhaengigkeit,E_, desto,Adjektiv,spezabhaengigkeit,E_der|die|das|den,unspezvariable
+
+modal: E_, aber nur,Wertebereich
+
+vergleich: Adjektiv,unspezvariable,unspezabhaengigkeit,E_der|die|das|den,unspezvariable,vergleichsOp,Adjektiv,unspezvariable
+   | E_der|die|das|den,unspezAV,spezabhaengigkeit,E_bei,spezUV,vergleichsOp,E_bei,spezUV
+
+unspezvariable: unspezAV
+   | unspezUV
+
+unspezAV: E_Hefeaktivitaet
+   | E_Pizzateig
+   | E_Hefe
+   | E_Enzyme
+   | E_Enzymaktivitaet
+
+unspezUV: E_Temperatur
+   | E_Waerme
+   | E_Kaelte
+
+spezUV: E_20 Grad
+   | E_0 Grad
+
+unspezabhaengigkeit: E_beeinflusst
+
+spezabhaengigkeit: E_steigt
+   | E_fällt
+   | E_arbeitet
+
+Adjektiv: E_mehr
+   | E_weniger
+   | E_hoeher|e
+   | E_niedriger|e
+
+spezAdjektiv : E_langsamer
+   | E_schneller
+
+AdjektivStar: spezAdjektiv
+   | Adjektiv
+
+vergleichsOp: E_besser als
+
+Wertebereich: E_von 20 Grad
+   | E_ab 20 Grad
+   | E_von 20 Grad bis 40 Grad
+
+E_von 20 Grad: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,von 20 Grad
+
+NewProduktionI: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+
+E_ab 20 Grad: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,ab 20 Grad
+
+E_von 20 Grad bis 40 Grad: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,von 20 Grad bis 40 Grad
+
+E_besser als: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,besser als
+
+E_langsamer: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,langsamer
+
+E_schneller: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,schneller
+
+E_niedriger|e: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,niedriger|e
+
+E_hoeher|e: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,hoeher|e
+
+E_mehr: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,mehr
+
+E_weniger: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,weniger
+
+E_steigt: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,steigt
+
+E_fällt: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,fällt
+
+E_arbeitet: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,arbeitet
+
+E_beeinflusst: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,beeinflusst
+
+E_0 Grad: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,0 Grad
+
+E_20 Grad: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,20 Grad
+
+E_Hefeaktivitaet: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Hefeaktivitaet
+
+E_Pizzateig: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Pizzateig
+
+E_Hefe: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Hefe
+
+E_Enzyme: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Enzyme
+
+E_Enzymaktivitaet: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Enzymaktivitaet
+
+E_bei: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,bei
+
+E_der|die|das|den: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,der|die|das|den
+
+E_je: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,je
+
+E_, dann: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,, dann
+
+E_, desto: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,, desto
+
+E_Temperatur: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Temperatur
+
+E_Waerme: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Waerme
+
+E_Kaelte: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,Kaelte
+
+E_, aber nur: von 20 Grad
+   | ab 20 Grad
+   | von 20 Grad bis 40 Grad
+   | besser als
+   | langsamer
+   | schneller
+   | niedriger|e
+   | hoeher|e
+   | mehr
+   | weniger
+   | hoeher|e
+   | niedriger|e
+   | steigt
+   | fällt
+   | arbeitet
+   | beeinflusst
+   | 0 Grad
+   | 20 Grad
+   | 0 Grad
+   | Hefeaktivitaet
+   | Pizzateig
+   | Hefe
+   | Enzyme
+   | Enzymaktivitaet
+   | bei
+   | der|die|das|den
+   | je
+   | , dann
+   | , desto
+   | Temperatur
+   | Waerme
+   | Kaelte
+   | , aber nur
+   | 
+   | NewProduktionH,, aber nur
+
+NewStart_hypothese: hypothese
+   | hypothese,NewProduktionH
+
+NewProduktionH: NewProduktionH,NewProduktionI
+   | NewProduktionI
+

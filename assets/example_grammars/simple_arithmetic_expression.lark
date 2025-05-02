@@ -1,0 +1,10 @@
+start: start "-" terminal
+    | start "+" terminal
+    | terminal
+
+terminal: terminal "*" factor
+    | start "/" terminal
+    | factor
+
+factor: "(" start ")"
+    | "n"

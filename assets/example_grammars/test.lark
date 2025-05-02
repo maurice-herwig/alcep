@@ -1,0 +1,19 @@
+new_s: s
+  |s insertmore
+insertmore: insertmore insert
+  |insert
+s: e
+e: e plus e
+  | eins
+eins: EINS
+   | PLUS -> repleins
+   | insertmore EINS
+   |  -> deleins
+plus: PLUS
+   | EINS -> replplus
+   | insertmore PLUS
+   |  -> delplus
+insert:  EINS -> inseins
+  | PLUS -> insplus
+EINS: "eins"
+PLUS: "plus"

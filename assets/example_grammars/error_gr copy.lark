@@ -1,0 +1,29 @@
+s: e
+
+new_s: s
+    | s insert
+
+
+sym_plus: PLUS   
+    | EINS       -> repl_plus
+    |           -> del_plus
+    | insert PLUS 
+
+sym_1: EINS      -> eins
+    | PLUS       -> repl_eins
+    |           -> del_eins
+    | insert EINS 
+
+insert: insert new_symbol
+      | new_symbol
+
+new_symbol: EINS  -> ins_eins
+      | PLUS      -> ins_plus
+
+e: e sym_plus e  
+   | sym_1   
+
+EINS: "1"  
+PLUS: "+"
+
+

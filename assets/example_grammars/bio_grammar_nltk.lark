@@ -1,0 +1,47 @@
+start : einfach | komplex
+
+
+einfach : unspezifisch | spezifisch | konditional
+
+komplex : einfach modal | vergleich
+
+
+
+unspezifisch : "der|die|das|den" unspezvariable UNSPEZABH "der|die|das|den" unspezvariable 
+
+spezifisch : "der|die|das|den" unspezvariable SPEZABH SPEZ_ADJ "bei" ADJEKTIV unspezvariable | "bei" ADJEKTIV unspezvariable SPEZABH "der|die|das|den" unspezvariable | "bei" SPEZ_UV SPEZABH "der|die|das|den" unspezvariable SPEZ_ADJ| "der|die|das|den" unspezvariable SPEZABH SPEZ_ADJ "bei" SPEZ_UV
+
+konditional : "wenn" "der|die|das|den" unspezvariable adjektiv_star SPEZABH", dann"  SPEZABH "der|die|das|den" unspezvariable SPEZ_ADJ | "je" ADJEKTIV "der|die|das|den" unspezvariable SPEZABH", desto" ADJEKTIV SPEZABH "der|die|das|den" unspezvariable
+
+
+
+modal : ", aber nur" WERTEBEREICH
+
+
+
+vergleich : ADJEKTIV unspezvariable UNSPEZABH "der|die|das|den" unspezvariable VERGLEICH_OP  ADJEKTIV unspezvariable | "der|die|das|den" UNSPEZ_AV SPEZABH "bei" SPEZ_UV VERGLEICH_OP "bei" SPEZ_UV
+
+
+
+
+
+
+
+unspezvariable : UNSPEZ_AV | UNSPEZ_UV
+
+UNSPEZ_AV : "Hefeaktivitaet" //| "Pizzateig" | "Hefe" | "Enzyme" | "Enzymaktivitaet" 
+UNSPEZ_UV : "Temperatur" //| "Waerme" | "Kaelte"
+
+SPEZ_UV : "zwanzig Grad"// | "null Grad"
+
+UNSPEZABH : "beeinflusst" 
+SPEZABH : "steigt"// | "faellt" | "arbeitet"
+
+ADJEKTIV : "mehr" //| "weniger" | "hoeher|e" | "niedriger|e"
+SPEZ_ADJ : "langsamer" //| "schneller"
+
+adjektiv_star : SPEZ_ADJ | ADJEKTIV | 
+
+VERGLEICH_OP : "besser als"
+
+WERTEBEREICH : "von 20 Grad" //| "ab 20 Grad" | "von 20 Grad bis 40 Grad"

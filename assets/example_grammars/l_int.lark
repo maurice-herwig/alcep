@@ -1,0 +1,22 @@
+start: exp
+
+exp: INT
+| "input_int" "(" ")"
+| "-" exp
+| exp "+" exp  // -> plus
+| exp "-" exp
+| "(" exp ")"
+
+stmt: "print" "(" exp ")" 
+| exp 
+
+stmt_list:
+| stmt  
+| stmt NEWLINE stmt_list 
+
+lang_int: stmt_list
+
+DIGIT: /[0-9]/
+INT: "-"? DIGIT+
+NEWLINE: (/\r/? /\n/)+   
+//BINOP: "+" | "-"
