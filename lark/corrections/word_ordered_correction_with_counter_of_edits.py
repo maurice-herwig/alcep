@@ -1,5 +1,5 @@
 from .word_ordered_correction import WordOrderedCorrection
-from corrections.edit_operations import InsertionOperation
+from lark.corrections.edit_operations import InsertionOperation
 
 
 class WordOrderedCorrectionWithCounterOfEdits(WordOrderedCorrection):

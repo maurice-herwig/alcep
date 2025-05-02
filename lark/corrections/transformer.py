@@ -1,12 +1,12 @@
 from lark.utils import OrderedSet
 from lark.parsers.earley_forest import SymbolNode, TokenNode, PackedNode
 from collections import deque, defaultdict
-from corrections.edit_operations import InsertionOperation, ReplacementOperation, ReadOperation
-from corrections.word_ordered_correction import WordOrderedCorrection
-from corrections.word_ordered_correction_with_counter_of_edits import WordOrderedCorrectionWithCounterOfEdits
+from lark.corrections.edit_operations import InsertionOperation, ReplacementOperation, ReadOperation
+from lark.corrections.word_ordered_correction import WordOrderedCorrection
+from lark.corrections.word_ordered_correction_with_counter_of_edits import WordOrderedCorrectionWithCounterOfEdits
 from itertools import product
 
-import corrections.constants as constants
+import lark.corrections.constants as constants
 
 
 class CSPPFToCorrectionTransformer:

@@ -1,5 +1,5 @@
-from corrections.edit_operations import ReadOperation, DeletionOperation, InsertionOperation, ReplacementOperation
-import corrections.constants as constants
+from lark.corrections.edit_operations import ReadOperation, DeletionOperation, InsertionOperation, ReplacementOperation
+import lark.corrections.constants as constants
 
 
 class WordOrderedCorrection:

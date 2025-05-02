@@ -1,5 +1,5 @@
 from lark import Token
-import corrections.constants as constants
+import lark.corrections.constants as constants
 
 
 class EditOperation(Token):
