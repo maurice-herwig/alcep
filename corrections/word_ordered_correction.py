@@ -2,9 +2,9 @@ from corrections.edit_operations import ReadOperation, DeletionOperation, Insert
 import corrections.constants as constants
 
 
-class IndexlessCorrection:
+class WordOrderedCorrection:
     """
-    An indexless correction represents a sequence of insert operation in a special form.
+    An word_ordered correction represents a sequence of insert operation in a special form.
     1: An insertion operation. That represent that word that we want to insert in front of the first letter of the
     input word.
     2: An read/replace or deletion operation. That describe how the first letter of the input word should be handled,
@@ -17,19 +17,19 @@ class IndexlessCorrection:
     n = the length of the input word.
     """
 
-    def __init__(self, operations: list, validate_indexless: bool = False):
+    def __init__(self, operations: list, validate_word_ordered: bool = False):
         """
-        The constructor of indexless corrections.
+        The constructor of word_ordered corrections.
 
-        :param operations: A list of the edit operations of this indexless correction.
-        :param validate_indexless: If this value is true, then the constructor validate that a given list of edit
+        :param operations: A list of the edit operations of this word_ordered correction.
+        :param validate_word_ordered: If this value is true, then the constructor validate that a given list of edit
             operations is in the above described form.
         """
 
         self.operations = operations
 
         # Validate that the edit operations list in the right form.
-        if validate_indexless:
+        if validate_word_ordered:
             assert len(self.operations) % 2 == 1, "The number of edit operations of the corrections is not odd."
 
             for i in range(len(self.operations)):
@@ -44,9 +44,9 @@ class IndexlessCorrection:
 
     def apply(self):
         """
-        The application of an indexless correction on an input word.
-        Note that each indexless correction is only applicable on exactly one input word. Therefor we assume that we
-        want to apply this indexless correction on that input word.
+        The application of an word_ordered correction on an input word.
+        Note that each word_ordered correction is only applicable on exactly one input word. Therefor we assume that we
+        want to apply this word_ordered correction on that input word.
 
         :return: The corrected word.
         """
@@ -72,14 +72,14 @@ class IndexlessCorrection:
 
     def concatenate(self, other, simplify=False):
         """
-        Concatenate two indexless corrections.
-        We assume that both indexless corrections are given in a valid format.
+        Concatenate two word_ordered corrections.
+        We assume that both word_ordered corrections are given in a valid format.
 
-        :param other: The indexless correction that we want to add at the end of the self correction.
+        :param other: The word_ordered correction that we want to add at the end of the self correction.
         :param simplify: If this value is True the method return only the concatenated correction if this is in
             simplified form.
 
-        :return: The concatenated indexless correction or None if the concatenated correction is not in simplified form
+        :return: The concatenated word_ordered correction or None if the concatenated correction is not in simplified form
             and to simplify parameter is true.
         """
 
@@ -97,7 +97,7 @@ class IndexlessCorrection:
             return None
         else:
             # Return the concatenated correction.
-            return IndexlessCorrection(operations=
+            return WordOrderedCorrection(operations=
                                        self.operations[:-1]
                                        + [InsertionOperation(word=self.operations[-1].word + other.operations[0].word)]
                                        + other.operations[1:])
@@ -178,8 +178,8 @@ class IndexlessCorrection:
 
     def compare(self, other):
         """
-        Compare two indexless corrections.
-        !!! only indexless corrections of the same length can compare!!!
+        Compare two word_ordered corrections.
+        !!! only word_ordered corrections of the same length can compare!!!
         A correction is smaller than another correction iff the edit operation ath each index is smaller or equal as the
         edit operation of the other correction at the same index and a lest one index is the edit operatio real smaller.
 
@@ -189,7 +189,7 @@ class IndexlessCorrection:
         """
 
         # Check that the correction have the same length.
-        assert len(self) == len(other), "Only indexless corrections of the same length can be compared."
+        assert len(self) == len(other), "Only word_ordered corrections of the same length can be compared."
 
         # The current status of the comparison
         current_comparison = constants.CORRECTION_EQUAL

@@ -2,8 +2,8 @@ from lark.utils import OrderedSet
 from lark.parsers.earley_forest import SymbolNode, TokenNode, PackedNode
 from collections import deque, defaultdict
 from corrections.edit_operations import InsertionOperation, ReplacementOperation, ReadOperation
-from corrections.indexless_correction import IndexlessCorrection
-from corrections.indexless_correction_with_counter_of_edits import IndexlessCorrectionWithCounterOfEdits
+from corrections.word_ordered_correction import WordOrderedCorrection
+from corrections.word_ordered_correction_with_counter_of_edits import WordOrderedCorrectionWithCounterOfEdits
 from itertools import product
 
 import corrections.constants as constants
@@ -58,10 +58,10 @@ class CSPPFToCorrectionTransformer:
         # If we use corrections with a counter of the edit operations, set the class variables for the maximum number
         # of each operation of the IndexlessCorrectionWithCounterOfEdits class.
         if self.use_corrections_with_edit_counter:
-            IndexlessCorrectionWithCounterOfEdits.max_number_of_edits = max_number_of_edits
-            IndexlessCorrectionWithCounterOfEdits.max_number_of_insertions = max_number_of_insertions
-            IndexlessCorrectionWithCounterOfEdits.max_number_of_replacement = max_number_of_replacement
-            IndexlessCorrectionWithCounterOfEdits.max_number_of_deletions = max_number_of_deletions
+            WordOrderedCorrectionWithCounterOfEdits.max_number_of_edits = max_number_of_edits
+            WordOrderedCorrectionWithCounterOfEdits.max_number_of_insertions = max_number_of_insertions
+            WordOrderedCorrectionWithCounterOfEdits.max_number_of_replacement = max_number_of_replacement
+            WordOrderedCorrectionWithCounterOfEdits.max_number_of_deletions = max_number_of_deletions
 
     def transform(self, root):
         """
@@ -377,10 +377,10 @@ class CSPPFToCorrectionTransformer:
             # of a new indexless correction initialise the counters.
             match node:
                 case InsertionOperation():
-                    new_corrections = IndexlessCorrectionWithCounterOfEdits([node])
+                    new_corrections = WordOrderedCorrectionWithCounterOfEdits([node])
                     new_corrections.counter_of_insertions = 1
                 case ReplacementOperation():
-                    new_corrections = IndexlessCorrectionWithCounterOfEdits(
+                    new_corrections = WordOrderedCorrectionWithCounterOfEdits(
                         [InsertionOperation(word=""), node, InsertionOperation(word="")])
                     new_corrections.counter_of_replacements = 1
                 case ReadOperation():
@@ -390,10 +390,10 @@ class CSPPFToCorrectionTransformer:
                     for char in node.letter:
                         operations += [ReadOperation(letter=char), InsertionOperation(word="")]
 
-                    new_corrections = IndexlessCorrectionWithCounterOfEdits(operations)
+                    new_corrections = WordOrderedCorrectionWithCounterOfEdits(operations)
 
                 case _:
-                    new_corrections = IndexlessCorrectionWithCounterOfEdits(
+                    new_corrections = WordOrderedCorrectionWithCounterOfEdits(
                         [InsertionOperation(word=""), node, InsertionOperation(word="")])
                     new_corrections.counter_of_deletions = 1
 
@@ -401,10 +401,10 @@ class CSPPFToCorrectionTransformer:
         else:
             match node:
                 case InsertionOperation():
-                    corrections.add(IndexlessCorrection([node]))
+                    corrections.add(WordOrderedCorrection([node]))
                 case _:
                     corrections.add(
-                        IndexlessCorrection([InsertionOperation(word=""), node, InsertionOperation(word="")]))
+                        WordOrderedCorrection([InsertionOperation(word=""), node, InsertionOperation(word="")]))
 
         self.corrections[hash(node)][None] = corrections
 
