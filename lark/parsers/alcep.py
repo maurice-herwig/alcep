@@ -11,7 +11,7 @@ from lark.parsers.grammar_analysis import GrammarAnalyzer
 from lark.parsers.earley_forest import StableSymbolNode, SymbolNode, TokenNode
 from lark.parsers.earley_common import Item
 
-from lark.corrections.edit_operations import InsertionOperation, DeletionOperation, ReplacementOperation, ReadOperation
+
 
 if TYPE_CHECKING:
     from lark.common import LexerConf, ParserConf
@@ -182,6 +182,8 @@ class BaseParser:
 
             # The insertion rule
             elif item.expect in self.TERMINALS:
+
+                from lark.corrections.edit_operations import InsertionOperation
                 # Create a new item by shift the bullet point one postion to the right
                 new_item = item.advance()
 
@@ -212,6 +214,8 @@ class BaseParser:
         """
         Auxiliary function to apply the scanner rule.
         """
+
+        from lark.corrections.edit_operations import ReadOperation
         # Create a new item by shift the bullet point one postion to the right.
         new_item = item.advance()
 
@@ -238,6 +242,7 @@ class BaseParser:
         """
         Auxiliary function to apply the replacement rule.
         """
+        from lark.corrections.edit_operations import ReplacementOperation
         # Create a new item by shift the bullet point one postion to the right
         new_item = item.advance()
 
@@ -267,6 +272,8 @@ class BaseParser:
         """
         Auxillary function to apply the deletion rule.
         """
+        from lark.corrections.edit_operations import DeletionOperation
+
         new_item = copy.copy(item)
 
         # Create the label for the CSPPF node

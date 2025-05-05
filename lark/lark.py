@@ -205,7 +205,7 @@ class LarkOptions(Serialize):
         self.__dict__['options'] = options
 
 
-        assert_config(self.parser, ('earley', 'lalr', 'cyk', None))
+        assert_config(self.parser, ('alcep','earley', 'lalr', 'cyk', None))
 
         if self.parser == 'earley' and self.transformer:
             raise ConfigurationError('Cannot specify an embedded transformer when using the Earley algorithm. '
@@ -386,7 +386,7 @@ class Lark(Serialize):
             if self.options.parser == 'earley':
                 self.options.ambiguity = 'resolve'
         else:
-            assert_config(self.options.parser, ('earley', 'cyk'), "%r doesn't support disambiguation. Use one of these parsers instead: %s")
+            assert_config(self.options.parser, ('earley', 'cyk', 'alcep'), "%r doesn't support disambiguation. Use one of these parsers instead: %s")
 
         if self.options.priority == 'auto':
             self.options.priority = 'normal'
