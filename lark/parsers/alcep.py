@@ -442,6 +442,6 @@ class BaseParser:
                 logger.warning("Cannot find dependency 'pydot', will not generate csppf debug image")
             else:
                 for i, s in enumerate(solutions):
-                    debug_walker.visit(s, f"csppf{i}.html")
+                    debug_walker.visit(s, f"sppf{i}.html")
 
         return solutions[0]

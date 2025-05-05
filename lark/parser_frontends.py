@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, Optional, Collection, Union, TYPE_CHECKI
 from .exceptions import ConfigurationError, GrammarError, assert_config
 from .utils import get_regexp_width, Serialize, TextOrSlice, TextSlice
 from .lexer import LexerThread, BasicLexer, ContextualLexer, Lexer
-from .parsers import earley, xearley, cyk, alcep
+from .parsers import earley, xearley, cyk, alcep, oalcep
 from .parsers.lalr_parser import LALR_Parser
 from .tree import Tree
 from .common import LexerConf, ParserConf, _ParserArgType, _LexerArgType
@@ -138,13 +138,14 @@ class ParsingFrontend(Serialize):
 
 
 def _validate_frontend_args(parser, lexer) -> None:
-    assert_config(parser, ('lalr', 'earley', 'cyk', 'alcep'))
+    assert_config(parser, ('lalr', 'earley', 'cyk', 'alcep', 'oalcep'))
     if not isinstance(lexer, type):  # not custom lexer?
         expected = {
             'lalr': ('basic', 'contextual'),
             'earley': ('basic', 'dynamic', 'dynamic_complete'),
             'cyk': ('basic',),
             'alcep': ('basic',),
+            'oalcep': ('basic',),
         }[parser]
         assert_config(lexer, expected, 'Parser %r does not support lexer %%r, expected one of %%s' % parser)
 
@@ -259,8 +260,25 @@ def create_alcep(lexer_conf: LexerConf, parser_conf: ParserConf, options):
     return alcep.BaseParser(lexer_conf=lexer_conf,
                             parser_conf=parser_conf,
                             term_matcher=_match_earley_basic,
-                            debug=debug, tree_class=tree_class,
+                            debug=debug,
+                            tree_class=tree_class,
                             ordered_sets=options.ordered_sets)
+
+
+def create_oalcep(lexer_conf: LexerConf, parser_conf: ParserConf, options):
+    resolve_ambiguity = options.ambiguity == 'resolve'
+    debug = options.debug if options else False
+    tree_class = options.tree_class or Tree if options.ambiguity != 'forest' else None
+
+    if resolve_ambiguity:
+        raise Exception("The optimized all correction Earley Parser cannot resolve ambiguity")
+
+    return oalcep.OptimizedBaseParser(lexer_conf=lexer_conf,
+                                      parser_conf=parser_conf,
+                                      term_matcher=_match_earley_basic,
+                                      debug=debug,
+                                      tree_class=tree_class,
+                                      ordered_sets=options.ordered_sets)
 
 
 class CYK_FrontEnd:
@@ -288,6 +306,7 @@ class CYK_FrontEnd:
 _parser_creators['earley'] = create_earley_parser
 _parser_creators['cyk'] = CYK_FrontEnd
 _parser_creators['alcep'] = create_alcep
+_parser_creators['oalcep'] = create_oalcep
 
 
 def _construct_parsing_frontend(
