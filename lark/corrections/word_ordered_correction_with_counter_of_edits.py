@@ -28,8 +28,8 @@ class WordOrderedCorrectionWithCounterOfEdits(WordOrderedCorrection):
 
     def concatenate(self, other, simplify=False):
         """
-        Concatenate two word_ordered corrections.
-        We assume that both word_ordered corrections are given in a valid format.
+        Concatenate two word_ordered corrections_parser.
+        We assume that both word_ordered corrections_parser are given in a valid format.
 
         :param other: The word_ordered correction that we want to add at the end of the self correction.
         :param simplify: If this value is True the method return only the concatenated correction if this is in
@@ -53,7 +53,7 @@ class WordOrderedCorrectionWithCounterOfEdits(WordOrderedCorrection):
             return None
         else:
 
-            # Compute the new counters of corrections and check if they are greater than the maximum values.
+            # Compute the new counters of corrections_parser and check if they are greater than the maximum values.
             new_counter_of_insertions = self.counter_of_insertions + other.counter_of_insertions
             if WordOrderedCorrectionWithCounterOfEdits.max_number_of_insertions != -1 \
                     and new_counter_of_insertions > WordOrderedCorrectionWithCounterOfEdits.max_number_of_insertions:
@@ -74,7 +74,7 @@ class WordOrderedCorrectionWithCounterOfEdits(WordOrderedCorrection):
                 if sum_of_edits > WordOrderedCorrectionWithCounterOfEdits.max_number_of_edits:
                     return None
 
-            # Create the concatenated corrections
+            # Create the concatenated corrections_parser
             new_correction_with_counter = WordOrderedCorrectionWithCounterOfEdits(
                 operations=self.operations[:-1]
                            + [InsertionOperation(word=self.operations[-1].word + other.operations[0].word)]
