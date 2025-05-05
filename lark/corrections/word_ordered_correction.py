@@ -19,7 +19,7 @@ class WordOrderedCorrection:
 
     def __init__(self, operations: list, validate_word_ordered: bool = False):
         """
-        The constructor of word_ordered corrections.
+        The constructor of word_ordered corrections_parser.
 
         :param operations: A list of the edit operations of this word_ordered correction.
         :param validate_word_ordered: If this value is true, then the constructor validate that a given list of edit
@@ -30,16 +30,16 @@ class WordOrderedCorrection:
 
         # Validate that the edit operations list in the right form.
         if validate_word_ordered:
-            assert len(self.operations) % 2 == 1, "The number of edit operations of the corrections is not odd."
+            assert len(self.operations) % 2 == 1, "The number of edit operations of the corrections_parser is not odd."
 
             for i in range(len(self.operations)):
                 if i % 2 == 0:
                     if not isinstance(self.operations[i], InsertionOperation):
-                        raise Exception("The corrections must be an alternating sequence of insertion "
+                        raise Exception("The corrections_parser must be an alternating sequence of insertion "
                                         "and non-insertion operations.")
                 else:
                     if not type(self.operations[i]) in {ReadOperation, ReplacementOperation, DeletionOperation}:
-                        raise Exception("The corrections must be an alternating sequence of insertion "
+                        raise Exception("The corrections_parser must be an alternating sequence of insertion "
                                         "and non-insertion operations.")
 
     def apply(self):
@@ -72,8 +72,8 @@ class WordOrderedCorrection:
 
     def concatenate(self, other, simplify=False):
         """
-        Concatenate two word_ordered corrections.
-        We assume that both word_ordered corrections are given in a valid format.
+        Concatenate two word_ordered corrections_parser.
+        We assume that both word_ordered corrections_parser are given in a valid format.
 
         :param other: The word_ordered correction that we want to add at the end of the self correction.
         :param simplify: If this value is True the method return only the concatenated correction if this is in
@@ -107,7 +107,7 @@ class WordOrderedCorrection:
         Auxiliary method to check if the by the concatenation fo the two given correction the resulting correction
         is in simplified form or not.
 
-        !!! This method assume that both given corrections are already in simplified form!!!
+        !!! This method assume that both given corrections_parser are already in simplified form!!!
 
         :param self: The front part of the concatenated correction.
         :param other: The rear part of the concatenated correction.
@@ -123,14 +123,14 @@ class WordOrderedCorrection:
         other_first_operation = other.operations[0]
 
         # If both the insertion word of both insertion operation is not empty then we cannot simplify the
-        # corrections.
+        # corrections_parser.
         if self_last_operation.word and other_first_operation.word:
             return False
 
         # The insertion word of the others first correction is empty.
         elif self_last_operation.word and not other_first_operation.word:
 
-            # If the other corrections consists only of empty insertion, the correction cannot be simplified.
+            # If the other corrections_parser consists only of empty insertion, the correction cannot be simplified.
             if len(other) == 1:
                 return False
 
@@ -159,7 +159,7 @@ class WordOrderedCorrection:
                     return False
 
         else:
-            # If one of the corrections consists only of the empty insertion, the correction cannot be simplified.
+            # If one of the corrections_parser consists only of the empty insertion, the correction cannot be simplified.
             if len(other) == 1 or len(self) == 1:
                 return False
 
@@ -178,8 +178,8 @@ class WordOrderedCorrection:
 
     def compare(self, other):
         """
-        Compare two word_ordered corrections.
-        !!! only word_ordered corrections of the same length can compare!!!
+        Compare two word_ordered corrections_parser.
+        !!! only word_ordered corrections_parser of the same length can compare!!!
         A correction is smaller than another correction iff the edit operation ath each index is smaller or equal as the
         edit operation of the other correction at the same index and a lest one index is the edit operatio real smaller.
 
@@ -189,12 +189,12 @@ class WordOrderedCorrection:
         """
 
         # Check that the correction have the same length.
-        assert len(self) == len(other), "Only word_ordered corrections of the same length can be compared."
+        assert len(self) == len(other), "Only word_ordered corrections_parser of the same length can be compared."
 
         # The current status of the comparison
         current_comparison = constants.CORRECTION_EQUAL
 
-        # Iterate over all edit operations of both corrections and compare the edit operation. Update after each compare
+        # Iterate over all edit operations of both corrections_parser and compare the edit operation. Update after each compare
         # the current comparison status.
         for edit_i_self, edit_i_other in zip(self.operations, other.operations):
             match edit_i_self.compare(edit_i_other):

@@ -22,29 +22,29 @@ class CSPPFToCorrectionTransformer:
                  max_number_of_edits=-1):
         """
         The constructor of an CSPPFToCorrectionTransformer.
-        Such an object can compute all indexless corrections that are stored in a CSPPF (we use a Lark forest with
+        Such an object can compute all indexless corrections_parser that are stored in a CSPPF (we use a Lark forest with
         special token nodes see edit_operations.py) without a node in the CSPPF appearing more than once in the
         derivation of a correction.
 
-        :param only_simplified: If this parameter is true, then the algorithm calculates only indexless corrections,
+        :param only_simplified: If this parameter is true, then the algorithm calculates only indexless corrections_parser,
                 which are simplified.
-        :param only_smallest: If this parameter is true, the algorithm only calculates indexless corrections so that no
+        :param only_smallest: If this parameter is true, the algorithm only calculates indexless corrections_parser so that no
             sub-correction for this correction is also saved in the CSPPF.
         :param smallest_dynamically: If this parameter is true and the only_smallest parameter is also true, then
-            the algorithm removes all non-smallest corrections after calculating all indexless corrections that can be
+            the algorithm removes all non-smallest corrections_parser after calculating all indexless corrections_parser that can be
             derived from a node. If this parameter is false and the only_smallest parameter is true, then the algorithm
-            removes all non-smallest corrections after computing of all corrections (the computation of the root node).
+            removes all non-smallest corrections_parser after computing of all corrections_parser (the computation of the root node).
         :param ordered_sets: A boolean if ordered sets are used instead of normal sets.
-        :param corrections_with_edit_counter: A boolean if corrections with edit operation counter are used or normal
-            indexless corrections.
+        :param corrections_with_edit_counter: A boolean if corrections_parser with edit operation counter are used or normal
+            indexless corrections_parser.
         :param max_number_of_insertions: The maximum number of insertion operations that a correction may have.
-            Parameter is only taken into account if corrections with edit counter are used.
+            Parameter is only taken into account if corrections_parser with edit counter are used.
         :param max_number_of_replacement: The maximum number of replacement operations that a correction may have.
-            Parameter is only taken into account if corrections with edit counter are used.
+            Parameter is only taken into account if corrections_parser with edit counter are used.
         :param max_number_of_deletions: The maximum number of deletion operations that a correction may have. Parameter
-            is only taken into account if corrections with edit counter are used.
+            is only taken into account if corrections_parser with edit counter are used.
         :param max_number_of_edits: The maximum number of edit operations that a correction may have. Parameter is only
-            taken into account if corrections with edit counter are used.
+            taken into account if corrections_parser with edit counter are used.
         """
 
         # Set the attributes.
@@ -55,7 +55,7 @@ class CSPPFToCorrectionTransformer:
         self.Set = OrderedSet if ordered_sets else set
         self.use_corrections_with_edit_counter = corrections_with_edit_counter
 
-        # If we use corrections with a counter of the edit operations, set the class variables for the maximum number
+        # If we use corrections_parser with a counter of the edit operations, set the class variables for the maximum number
         # of each operation of the IndexlessCorrectionWithCounterOfEdits class.
         if self.use_corrections_with_edit_counter:
             WordOrderedCorrectionWithCounterOfEdits.max_number_of_edits = max_number_of_edits
@@ -65,23 +65,23 @@ class CSPPFToCorrectionTransformer:
 
     def transform(self, root):
         """
-        Transform a correction shared packed parse forst (CSPPF) to the set of corrections, that can be derived from
+        Transform a correction shared packed parse forst (CSPPF) to the set of corrections_parser, that can be derived from
         the CSPPF without loops.
 
         :param root: The root node of the CSPPF
-        :return: The set of corrections.
+        :return: The set of corrections_parser.
         """
         assert isinstance(root, SymbolNode), \
-            "The CSPPFToCorrectionTransformer can only compute the set of corrections for an SymbolNode"
+            "The CSPPFToCorrectionTransformer can only compute the set of corrections_parser for an SymbolNode"
 
         # Call the super visit method, this method organises the visit of all nodes in and out.
         self.__visit(root=root)
 
-        # Get the corrections for the root node.
+        # Get the corrections_parser for the root node.
         corrections = self.corrections[hash(root)].get(None, self.Set())
 
-        # If we only want the smallest corrections, and we have not dynamically removed the non-smallest corrections,
-        # then we need just now to remove all non-smallest corrections.
+        # If we only want the smallest corrections_parser, and we have not dynamically removed the non-smallest corrections_parser,
+        # then we need just now to remove all non-smallest corrections_parser.
         if self.only_smallest and not self.smallest_dynamically:
             return self.__compute_smallest_corrections(set_of_corrections=corrections)
 
@@ -247,8 +247,8 @@ class CSPPFToCorrectionTransformer:
         The visit method of a packed node.
         This visit method is called after that all children of this node are also visited (in and out).
 
-        This method calculates all corrections that can be derived from the given node by forming the cross product of
-        all corrections of the left child and all corrections of the right child.
+        This method calculates all corrections_parser that can be derived from the given node by forming the cross product of
+        all corrections_parser of the left child and all corrections_parser of the right child.
 
         :param node: The visited node of type PackedNode (see lark.earley_forest).
         :param path_to_node: The path to this node.
@@ -280,7 +280,7 @@ class CSPPFToCorrectionTransformer:
             self.corrections[hash(node)][path_to_node] = right_corrections
             return
 
-        # Compute the cross product of all corrections of the left child and all corrections of the right child.
+        # Compute the cross product of all corrections_parser of the left child and all corrections_parser of the right child.
         at_least_one = False
         corrections = self.Set()
         for (left_correction, right_correction) in product(left_corrections, right_corrections):
@@ -289,10 +289,10 @@ class CSPPFToCorrectionTransformer:
                 corrections.add(new_correction)
                 at_least_one = True
 
-        # If at least one correction is calculated, add the set of corrections to the corrections dict self.corrections.
+        # If at least one correction is calculated, add the set of corrections_parser to the corrections_parser dict self.corrections_parser.
         if at_least_one:
 
-            # Eventually remove all non smallest corrections from the set of corrections, by using the auxiliary
+            # Eventually remove all non smallest corrections_parser from the set of corrections_parser, by using the auxiliary
             # function __compute_smallest_corrections.
             if self.only_smallest and self.smallest_dynamically:
                 self.corrections[hash(node)][path_to_node] = self.__compute_smallest_corrections(
@@ -323,7 +323,7 @@ class CSPPFToCorrectionTransformer:
         """ The visit method of a symbol (and intermediate) node.
         This visit method is called after that all children of this node are also visited (in and out).
 
-        This method calculates all corrections that can be derived from the given node by union the corrections that
+        This method calculates all corrections_parser that can be derived from the given node by union the corrections_parser that
         can be derived from the children (packed node).
 
 
@@ -342,17 +342,17 @@ class CSPPFToCorrectionTransformer:
         at_least_one = False
         corrections = self.Set()
 
-        # Iterate over all children and at there set of corrections to the corrections set.
+        # Iterate over all children and at there set of corrections_parser to the corrections_parser set.
         for child in node.children:
             hash_value_child = hash(child)
             if new_path_to_node in self.corrections[hash_value_child]:
                 corrections = corrections.union(self.corrections[hash_value_child][new_path_to_node])
                 at_least_one = True
 
-        # If at least one correction is calculated, add the set of corrections to the corrections dict self.corrections.
+        # If at least one correction is calculated, add the set of corrections_parser to the corrections_parser dict self.corrections_parser.
         if at_least_one:
 
-            # Eventually remove all non smallest corrections from the set of corrections, by using the auxiliary
+            # Eventually remove all non smallest corrections_parser from the set of corrections_parser, by using the auxiliary
             # function __compute_smallest_corrections.
             if self.only_smallest and self.smallest_dynamically:
                 self.corrections[hash(node)][path_to_node] = self.__compute_smallest_corrections(
@@ -365,7 +365,7 @@ class CSPPFToCorrectionTransformer:
         The visit method of a token node.
         As token nodes are the leaves of the CSPPF, they are only visited once, unlike the other node types.
 
-        :param node: The visited node of type EditOperation (see corrections.edit_operations.py)
+        :param node: The visited node of type EditOperation (see corrections_parser.edit_operations.py)
         :return: None
         """
 
@@ -373,7 +373,7 @@ class CSPPFToCorrectionTransformer:
 
         # Create an Indexless correction for the token node.
         if self.use_corrections_with_edit_counter:
-            # In the case that we use indexless corrections with counter of edit operations, in addition to the creation
+            # In the case that we use indexless corrections_parser with counter of edit operations, in addition to the creation
             # of a new indexless correction initialise the counters.
             match node:
                 case InsertionOperation():
@@ -409,45 +409,45 @@ class CSPPFToCorrectionTransformer:
         self.corrections[hash(node)][None] = corrections
 
     def __compute_smallest_corrections(self, set_of_corrections):
-        """ Auxiliary function to calculate the set of the smallest corrections for the given set of corrections.
+        """ Auxiliary function to calculate the set of the smallest corrections_parser for the given set of corrections_parser.
         A correction is the smallest corresponding to the given set if there is no correction in the set that is
         smaller. A correction is smaller than another fixup if they are all equal or smaller and at least one is really
         smaller. For the cases where an edit operation is smaller than another edit operation see edit_operation.py.
 
-        :param set_of_corrections: The set of corrections for that we want to compute the set of the smallest
-            corrections.
-        :return: The set of the smallest corrections.
+        :param set_of_corrections: The set of corrections_parser for that we want to compute the set of the smallest
+            corrections_parser.
+        :return: The set of the smallest corrections_parser.
         """
 
-        # The set of the computed the smallest corrections
+        # The set of the computed the smallest corrections_parser
         smallest_corrections = self.Set()
 
-        # Create a copy of the given set of corrections, so that the set is not changed outside of this method.
+        # Create a copy of the given set of corrections_parser, so that the set is not changed outside of this method.
         # From this set we remove each correction for that we have found a sub-correction.
         possible_smallest = set_of_corrections.copy()
 
         # Also crate an iterable list of the given set. Note that the constructor of a list create also a copy.
         possible_smallest_list = list(set_of_corrections)
 
-        # Iterate over all corrections in the set of possible smallest list. Note that the list is not changed in the
+        # Iterate over all corrections_parser in the set of possible smallest list. Note that the list is not changed in the
         # loop body.
         for i, correction1 in zip(range(len(possible_smallest_list)), possible_smallest_list):
 
-            # If the correction is already removed from the set of possible smallest corrections. We don't need to check
+            # If the correction is already removed from the set of possible smallest corrections_parser. We don't need to check
             # if the current correction one of the smallest correction.
             if correction1 in possible_smallest:
 
                 exist_no_smaller = True
 
-                # Iterate over all other possible smallest corrections to check if one of them a sub-correction, then
-                # the current correction cannot one of the smallest corrections.
+                # Iterate over all other possible smallest corrections_parser to check if one of them a sub-correction, then
+                # the current correction cannot one of the smallest corrections_parser.
                 for j in range(i + 1, len(possible_smallest_list)):
 
                     correction2 = possible_smallest_list[j]
 
                     # Compare correction1 and correction2 if one of them smaller than another, then we can remove the
-                    # smaller one from the set of the possible smallest corrections. Additionally, if correction2 is
-                    # smaller, then we know that correction1 cannot one of the smallest corrections.
+                    # smaller one from the set of the possible smallest corrections_parser. Additionally, if correction2 is
+                    # smaller, then we know that correction1 cannot one of the smallest corrections_parser.
                     match correction1.compare(correction2):
                         case constants.CORRECTION_SMALLER:
                             if correction2 in possible_smallest:
