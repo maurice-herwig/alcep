@@ -21,4 +21,4 @@ machine.
 ## Usage
 
 An example of the usage is shown in the [example.py](examples/corrections_parser/example.py) file.
-Additionally, grammars you can find [here].(./assets/example_grammars).
+Additionally, grammars you can find [here](./assets/example_grammars).
