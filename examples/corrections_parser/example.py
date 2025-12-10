@@ -8,7 +8,7 @@ if __name__ == '__main__':
         # Create a lark OALCEP parser instance.
         # Set debug to true to get in the file csspf.html a visualisation of the computed SPPF.
         # Set parser to 'alcep' to use the alcep parser.
-        parser = Lark(grammar, parser='oalcep', ambiguity='forest', lexer="basic", debug=False)
+        parser = Lark(grammar, parser='alciep', ambiguity='forest', lexer="basic", debug=False)
 
         # Start the parser process
         root = parser.parse("++++")
