@@ -94,6 +94,7 @@ class BaseParser:
         i = 0
 
         terms = {}
+        items_backlog = {}
 
         for rule in [rules for rules in self.predictions[NonTerminal(start)]]:
             # Create af earley Item for the current rule
@@ -102,15 +103,20 @@ class BaseParser:
             if item.expect in self.TERMINALS:
                 terminal_string = item.expect.name.pattern.value if isinstance(item.expect.name,
                                                                                TerminalDef) else item.expect.name
-
                 if item.expect not in terms:
-                    terms[terminal_string] = []
-                terms[terminal_string].append(item)
+                    terms[terminal_string] = set()
+                terms[terminal_string].add(item)
+            else:
+                if item.expect not in items_backlog:
+                    items_backlog[item.expect] = set()
+                items_backlog[item.expect].add(item)
 
         from ..corrections.edit_operations import InsertionOperation, DeletionOperation, ReplacementOperation, \
             ReadOperation
+        from lark.corrections import word_ordered_correction
 
         end_correction = False
+        correction = []
 
         while not end_correction:
             # Compute init edit options
@@ -158,9 +164,11 @@ class BaseParser:
                 except ValueError:
                     print("Invalid input. Please enter a number.")
 
-            # Compute the next current items and item backlog
             chosen_edit = edit_dict[chosen_option]
-            new_items = []
+            correction.append(chosen_edit)
+
+            # Compute the next current items and item backlog
+            new_items = set()
 
             if chosen_edit == FINISH_CORRECTION:
                 end_correction = True
@@ -173,12 +181,63 @@ class BaseParser:
             if type(chosen_edit) in [ReadOperation, ReplacementOperation]:
                 i += 1
 
-            if type(chosen_edit) in [ReadOperation, ReplacementOperation, InsertionOperation]:
-                for item in terms[chosen_edit.word]:
-                    new_items.append(item.advance())
+            match chosen_edit:
+                case InsertionOperation():
+                    for item in terms[chosen_edit.word]:
+                        new_items.add(item.advance())
+                case ReplacementOperation():
+                    for item in terms[chosen_edit.replaced_by]:
+                        new_items.add(item.advance())
+                case ReadOperation():
+                    for item in terms[chosen_edit.letter]:
+                        new_items.add(item.advance())
 
-            # TODO items new_items weiterverarbeiten0
+            # TODO items new_items weiterverarbeiten
+            new_terms = {}
+            final_items = []
 
-            print(new_items)
+            for item in new_items:
+                if item.is_complete:
+                    final_items.append(item)
 
-        print("end")
+                    continue
+
+                if item.expect in self.TERMINALS:
+                    terminal_string = item.expect.name.pattern.value if isinstance(item.expect.name,
+                                                                                   TerminalDef) else item.expect.name
+                    if item.expect not in new_terms:
+                        new_terms[terminal_string] = set()
+                    new_terms[terminal_string].add(item)
+                else:
+                    if item.expect not in items_backlog:
+                        items_backlog[item.expect] = set()
+                    items_backlog[item.expect].add(item)
+
+            # TODO final items verarbeiten
+            for item in final_items:
+
+                for next_items in items_backlog.get(item.rule.origin, set()):
+                    new_item = next_items.advance()
+
+                    if new_item.is_complete:
+                        final_items.append(new_item)
+                        continue
+
+                    if new_item.expect in self.TERMINALS:
+                        terminal_string = new_item.expect.name.pattern.value if isinstance(new_item.expect.name,
+                                                                                       TerminalDef) else new_item.expect.name
+                        if new_item.expect not in new_terms:
+                            new_terms[terminal_string] = set()
+                        new_terms[terminal_string].add(new_item)
+                    else:
+                        if new_item.expect not in items_backlog:
+                            items_backlog[new_item.expect] = set()
+                        items_backlog[new_item.expect].add(new_item)
+
+            terms = new_terms
+
+        # Print the resulting correction to the console
+        print("Correction process finished.")
+        correction = word_ordered_correction.WordOrderedCorrection(correction[:-1])
+        print(f'Correction: {correction}')
+        print(f'Corrected word: {correction.apply()}')
