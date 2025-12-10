@@ -3,9 +3,14 @@ from lark.tree import Tree
 from lark.utils import OrderedSet
 from lark.parsers.grammar_analysis import GrammarAnalyzer
 from lark.parsers.earley_forest import StableSymbolNode, SymbolNode
+from lark.parsers.earley_common import Item
+from lark.grammar import NonTerminal
+from lark.lexer import TerminalDef
 
 if TYPE_CHECKING:
     from lark.common import LexerConf, ParserConf
+
+FINISH_CORRECTION = "Finish Correction"
 
 
 class BaseParser:
@@ -70,7 +75,6 @@ class BaseParser:
             if term.priority:
                 raise Exception("The all correction earley parser don't support priorities.")
 
-
     def parse(self, lexer, start):
         """
         The parse functionality of the all correction interactive earley parser.
@@ -80,4 +84,101 @@ class BaseParser:
 
         :return: The root node of the computed correction shared packed parse forest.
         """
-        raise NotImplementedError()
+
+        # Assert that the start symbol is set.
+        assert start, start
+
+        # Compute the tokens of the input word and the length of the input word
+        tokens = [token for token in lexer.lex({})]
+        n = len(tokens)
+        i = 0
+
+        terms = {}
+
+        for rule in [rules for rules in self.predictions[NonTerminal(start)]]:
+            # Create af earley Item for the current rule
+            item = Item(rule, 0, 0)
+
+            if item.expect in self.TERMINALS:
+                terminal_string = item.expect.name.pattern.value if isinstance(item.expect.name,
+                                                                               TerminalDef) else item.expect.name
+
+                if item.expect not in terms:
+                    terms[terminal_string] = []
+                terms[terminal_string].append(item)
+
+        from ..corrections.edit_operations import InsertionOperation, DeletionOperation, ReplacementOperation, \
+            ReadOperation
+
+        end_correction = False
+
+        while not end_correction:
+            # Compute init edit options
+            next_token = tokens[i] if i < n else None
+            edit_options = []
+
+            if next_token is not None:
+                # Option 1: Delete the next token
+                edit_options.append(DeletionOperation(next_token))
+
+                # Option 2: Replace the next token by another terminal
+                # Option 3: Read the next token
+
+                # Create a label for the possible replacement node
+                for terminal in terms.keys():
+
+                    if terminal != next_token.type:
+                        edit_options.append(ReplacementOperation(next_token, terminal))
+                    else:
+                        edit_options.append(ReadOperation(next_token))
+
+            else:
+
+                # TODO nur wenn es Final item des Start Symbol gibt
+                edit_options.append(FINISH_CORRECTION)
+                # Option 4: Wenn es eine final regel gibt beende correction.
+
+            # Option 5: Insert a terminal before the next token
+            for terminal in terms.keys():
+                edit_options.append(InsertionOperation(terminal))
+
+            # Print the corrections to the console
+            edit_dict = {i: edit for i, edit in zip(range(len(edit_options)), edit_options)}
+            print("Possible edit operations:")
+            for key, value in edit_dict.items():
+                print(f"{key}: {value} ")
+
+            while True:
+                try:
+                    chosen_option = int(input("Choose an edit operation by its number: "))
+                    if chosen_option in edit_dict:
+                        break
+                    else:
+                        print("Invalid option. Please choose a valid number.")
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+
+            # Compute the next current items and item backlog
+            chosen_edit = edit_dict[chosen_option]
+            new_items = []
+
+            if chosen_edit == FINISH_CORRECTION:
+                end_correction = True
+                continue
+
+            if type(chosen_edit) == DeletionOperation:
+                i += 1
+                continue
+
+            if type(chosen_edit) in [ReadOperation, ReplacementOperation]:
+                i += 1
+
+            if type(chosen_edit) in [ReadOperation, ReplacementOperation, InsertionOperation]:
+                for item in terms[chosen_edit.word]:
+                    new_items.append(item.advance())
+
+            # TODO items new_items weiterverarbeiten0
+
+            print(new_items)
+
+        print("end")
