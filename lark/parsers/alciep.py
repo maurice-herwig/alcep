@@ -140,7 +140,7 @@ class BaseParser:
 
             # Option 1: Delete the next token
             if next_token is not None:
-                edit_options.append(DeletionOperation(next_token))
+                edit_options.append(DeletionOperation(next_token.type))
 
                 for terminal in to_scan.keys():
                     # Option 2 and 3: Read or Replace the next token
