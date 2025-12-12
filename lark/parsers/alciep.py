@@ -4,8 +4,8 @@ from lark.utils import OrderedSet
 from lark.parsers.grammar_analysis import GrammarAnalyzer
 from lark.parsers.earley_forest import StableSymbolNode, SymbolNode
 from lark.parsers.earley_common import Item
-from lark.grammar import NonTerminal
-from lark.lexer import TerminalDef
+from lark.grammar import NonTerminal, Terminal
+from collections import deque
 
 if TYPE_CHECKING:
     from lark.common import LexerConf, ParserConf
@@ -20,16 +20,17 @@ class BaseParser:
 
     def __init__(self, lexer_conf: 'LexerConf', parser_conf: 'ParserConf', term_matcher: Callable, debug: bool = False,
                  tree_class: Optional[Callable[[str, List], Any]] = Tree, ordered_sets: bool = True):
-        """
-        Constructor of the all correction earley Parser.
 
-        :param lexer_conf: The configuration of the Lexer.
-        :param parser_conf: The configuration of the Lexer.
-        :param term_matcher: A matcher function.
-        :param debug: A boolean value that specifies whether the debug mode of the parser should be used,
-        :param tree_class: The used tree class.
-        :param ordered_sets: A boolean if ordered sets are used instead of normal sets.
         """
+                Constructor of the all correction earley Parser.
+
+                :param lexer_conf: The configuration of the Lexer.
+                :param parser_conf: The configuration of the Lexer.
+                :param term_matcher: A matcher function.
+                :param debug: A boolean value that specifies whether the debug mode of the parser should be used,
+                :param tree_class: The used tree class.
+                :param ordered_sets: A boolean if ordered sets are used instead of normal sets.
+                """
 
         # set the attributes
         self.lexer_conf = lexer_conf
@@ -82,71 +83,82 @@ class BaseParser:
         :param lexer: The uses lexer object.
         :param start: The start symbol of the grammar as string.
 
-        :return: The root node of the computed correction shared packed parse forest.
+        :return: The selected correction as WordOrderedCorrection object.
         """
 
         # Assert that the start symbol is set.
         assert start, start
 
-        # Compute the tokens of the input word and the length of the input word
-        tokens = [token for token in lexer.lex({})]
-        n = len(tokens)
-        i = 0
+        # Create a non-terminal object for the start symbol.
+        start_symbol = NonTerminal(start)
 
-        terms = {}
-        items_backlog = {}
+        # Init a list of the earley sets
+        earley_sets = [self.Set()]
 
-        for rule in [rules for rules in self.predictions[NonTerminal(start)]]:
+        # Init a list of items of the current set with a terminal to the right of the bullet point.
+        # The set N in the all correction earley parser.
+        to_scan = {}
+
+        # Init the first earley set and the set to_scan by predict for the start_symbol.
+        for rule in self.predictions[start_symbol]:
+
             # Create af earley Item for the current rule
             item = Item(rule, 0, 0)
 
+            # Add the item to the current earley set
+            earley_sets[0].add(item)
+
+            # Check if the next terminal/non-terminal after the bullet point a terminal.
             if item.expect in self.TERMINALS:
-                terminal_string = item.expect.name.pattern.value if isinstance(item.expect.name,
-                                                                               TerminalDef) else item.expect.name
-                if item.expect not in terms:
-                    terms[terminal_string] = set()
-                terms[terminal_string].add(item)
-            else:
-                if item.expect not in items_backlog:
-                    items_backlog[item.expect] = set()
-                items_backlog[item.expect].add(item)
+                if item.expect in to_scan:
+                    to_scan[item.expect].add(item)
+                else:
+                    to_scan[item.expect] = self.Set([item])
+
+        # The index of the current Earley Set
+        i = 0
+
+        # Compute the tokens of the input and set j index for the current token
+        tokens = [token for token in lexer.lex({})]
+        n = len(tokens)
+        j = 0
+
+        # The resulting correction
+        end_correction = False
+        correction = []
 
         from ..corrections.edit_operations import InsertionOperation, DeletionOperation, ReplacementOperation, \
             ReadOperation
         from lark.corrections import word_ordered_correction
 
-        end_correction = False
-        correction = []
-
         while not end_correction:
-            # Compute init edit options
-            next_token = tokens[i] if i < n else None
+
+            next_token = tokens[j] if j < n else None
+
+            # Compute the next possible edit options
             edit_options = []
 
+            # Option 1: Delete the next token
             if next_token is not None:
-                # Option 1: Delete the next token
                 edit_options.append(DeletionOperation(next_token))
 
-                # Option 2: Replace the next token by another terminal
-                # Option 3: Read the next token
-
-                # Create a label for the possible replacement node
-                for terminal in terms.keys():
-
-                    if terminal != next_token.type:
-                        edit_options.append(ReplacementOperation(next_token, terminal))
+                for terminal in to_scan.keys():
+                    # Option 2 and 3: Read or Replace the next token
+                    if self.term_matcher(terminal, next_token):
+                        edit_options.append(ReadOperation(terminal.name))
                     else:
-                        edit_options.append(ReadOperation(next_token))
+                        edit_options.append(ReplacementOperation(next_token, terminal.name))
 
-            else:
+            # Option 4: Insert a terminal before the next token
+            for terminal in to_scan.keys():
+                edit_options.append(InsertionOperation(terminal.name))
 
-                # TODO nur wenn es Final item des Start Symbol gibt
-                edit_options.append(FINISH_CORRECTION)
-                # Option 4: Wenn es eine final regel gibt beende correction.
-
-            # Option 5: Insert a terminal before the next token
-            for terminal in terms.keys():
-                edit_options.append(InsertionOperation(terminal))
+            # Option 5: If there is a final item for the start symbol and the complete word a seen,
+            # finish the correction
+            if j == n:
+                if any((item.is_complete and item.rule.origin == start_symbol and item.start == 0) for item in
+                       earley_sets[i]):
+                    edit_options.append(FINISH_CORRECTION)
 
             # Print the corrections to the console
             edit_dict = {i: edit for i, edit in zip(range(len(edit_options)), edit_options)}
@@ -154,6 +166,7 @@ class BaseParser:
             for key, value in edit_dict.items():
                 print(f"{key}: {value} ")
 
+            # Let the user choose an edit operation
             while True:
                 try:
                     chosen_option = int(input("Choose an edit operation by its number: "))
@@ -163,81 +176,119 @@ class BaseParser:
                         print("Invalid option. Please choose a valid number.")
                 except ValueError:
                     print("Invalid input. Please enter a number.")
-
             chosen_edit = edit_dict[chosen_option]
             correction.append(chosen_edit)
 
-            # Compute the next current items and item backlog
-            new_items = set()
-
+            # Apply the chosen edit operation
             if chosen_edit == FINISH_CORRECTION:
                 end_correction = True
                 continue
 
+            earley_sets.append(self.Set())
+
+            if type(chosen_edit) in [ReadOperation, ReplacementOperation, DeletionOperation]:
+                j += 1
+
+            i += 1
+            # Apply deletion operation
             if type(chosen_edit) == DeletionOperation:
-                i += 1
+                earley_sets[i] = earley_sets[i - 1]
                 continue
 
-            if type(chosen_edit) in [ReadOperation, ReplacementOperation]:
-                i += 1
+            new_to_scan = {}
+            # Apply read, replacement or insertion operation
+            if type(chosen_edit) in [ReadOperation, ReplacementOperation, InsertionOperation]:
 
-            match chosen_edit:
-                case InsertionOperation():
-                    for item in terms[chosen_edit.word]:
-                        new_items.add(item.advance())
-                case ReplacementOperation():
-                    for item in terms[chosen_edit.replaced_by]:
-                        new_items.add(item.advance())
-                case ReadOperation():
-                    for item in terms[chosen_edit.letter]:
-                        new_items.add(item.advance())
-
-            # TODO items new_items weiterverarbeiten
-            new_terms = {}
-            final_items = []
-
-            for item in new_items:
-                if item.is_complete:
-                    final_items.append(item)
-
-                    continue
-
-                if item.expect in self.TERMINALS:
-                    terminal_string = item.expect.name.pattern.value if isinstance(item.expect.name,
-                                                                                   TerminalDef) else item.expect.name
-                    if item.expect not in new_terms:
-                        new_terms[terminal_string] = set()
-                    new_terms[terminal_string].add(item)
+                if type(chosen_edit) == ReadOperation:
+                    terminal = Terminal(chosen_edit.letter)
+                elif type(chosen_edit) == ReplacementOperation:
+                    terminal = Terminal(chosen_edit.replaced_by)
+                elif type(chosen_edit) == InsertionOperation:
+                    terminal = Terminal(chosen_edit.word)
                 else:
-                    if item.expect not in items_backlog:
-                        items_backlog[item.expect] = set()
-                    items_backlog[item.expect].add(item)
+                    raise Exception("Unknown edit operation.")
 
-            # TODO final items verarbeiten
-            for item in final_items:
-
-                for next_items in items_backlog.get(item.rule.origin, set()):
-                    new_item = next_items.advance()
-
-                    if new_item.is_complete:
-                        final_items.append(new_item)
-                        continue
+                for item in to_scan[terminal]:
+                    new_item = item.advance()
+                    earley_sets[i].add(new_item)
 
                     if new_item.expect in self.TERMINALS:
-                        terminal_string = new_item.expect.name.pattern.value if isinstance(new_item.expect.name,
-                                                                                       TerminalDef) else new_item.expect.name
-                        if new_item.expect not in new_terms:
-                            new_terms[terminal_string] = set()
-                        new_terms[terminal_string].add(new_item)
-                    else:
-                        if new_item.expect not in items_backlog:
-                            items_backlog[new_item.expect] = set()
-                        items_backlog[new_item.expect].add(new_item)
+                        if new_item.expect in new_to_scan:
+                            new_to_scan[new_item.expect].add(new_item)
+                        else:
+                            new_to_scan[new_item.expect] = self.Set([new_item])
+            to_scan = new_to_scan
 
-            terms = new_terms
+            # Complete the earley set by predict and complete operations
+            # Held Completions (the set H).
+            held_completions = {}
+            # Get a pointer to the current computed earley set
+            current_earley_set = earley_sets[i]
+
+            # Init a queue with all items of the current earley set (the set R).
+            items = deque(current_earley_set)
+
+            # iterate over all earley items in queue (all items of the current earley set).
+            while items:
+                item = items.pop()
+
+                # The earley completer rule
+                if item.is_complete:
+
+                    # Regular Earley completer
+                    # If the also starts at this earley set, we need add this item to the set of held_completions,
+                    # because all Earley items that are subsequently calculated for the current earley set can possibly
+                    # be completed with the final item.
+                    if item.start == i:
+                        held_completions[item.rule.origin] = item.node
+
+                    # Get for the current final item [B -> ... bullet, j, u] all items in the earley set j
+                    # of the form [A -> ... bullet B ...]
+                    originators = [originator for originator in earley_sets[item.start] if
+                                   originator.expect is not None and originator.expect == item.s]
+
+                    for originator in originators:
+                        # Create a new item by shift the bullet point one postion to the right of the originator item
+                        new_item = originator.advance()
+                        if new_item not in current_earley_set:
+                            current_earley_set.add(new_item)
+                            items.append(new_item)
+                            if new_item.expect in self.TERMINALS:
+                                if new_item.expect in new_to_scan:
+                                    new_to_scan[new_item.expect].add(new_item)
+                                else:
+                                    new_to_scan[new_item.expect] = self.Set([new_item])
+
+                # The earley predictor rule
+                elif item.expect in self.NON_TERMINALS:
+
+                    # Iterate over all rule with the non-terminal, that we expect as next, on the left.
+                    for rule in self.predictions[item.expect]:
+                        new_item = Item(rule, 0, i)
+                        if new_item not in current_earley_set:
+                            current_earley_set.add(new_item)
+                            items.append(new_item)
+                            if new_item.expect in self.TERMINALS:
+                                if new_item.expect in new_to_scan:
+                                    new_to_scan[new_item.expect].add(new_item)
+                                else:
+                                    new_to_scan[new_item.expect] = self.Set([new_item])
+
+                    # Process any held completions (H).
+                    if item.expect in held_completions:
+                        new_item = item.advance()
+                        if new_item not in current_earley_set:
+                            current_earley_set.add(new_item)
+                            items.append(new_item)
+                            if new_item.expect in self.TERMINALS:
+                                if new_item.expect in new_to_scan:
+                                    new_to_scan[new_item.expect].add(new_item)
+                                else:
+                                    new_to_scan[new_item.expect] = self.Set([new_item])
 
         # Print the resulting correction to the console
         print("Correction process finished.")
         correction = word_ordered_correction.WordOrderedCorrection(correction[:-1])
         print(f'Correction: {correction}')
         print(f'Corrected word: {correction.apply()}')
+        return correction
