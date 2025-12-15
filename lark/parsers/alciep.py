@@ -72,9 +72,9 @@ class BaseParser:
                 raise Exception("The all correction earley parser don't support priorities.")
 
         # Check terminals for priorities
-        for term in self.lexer_conf.terminals:
-            if term.priority:
-                raise Exception("The all correction earley parser don't support priorities.")
+        #for term in self.lexer_conf.terminals:
+        #    if term.priority:
+        #        raise Exception("The all correction earley parser don't support priorities.")
 
     def parse(self, lexer, start):
         """
@@ -286,9 +286,5 @@ class BaseParser:
                                 else:
                                     new_to_scan[new_item.expect] = self.Set([new_item])
 
-        # Print the resulting correction to the console
-        print("Correction process finished.")
-        correction = word_ordered_correction.WordOrderedCorrection(correction[:-1])
-        print(f'Correction: {correction}')
-        print(f'Corrected word: {correction.apply()}')
-        return correction
+        # Return the computed correction
+        return word_ordered_correction.WordOrderedCorrection(correction[:-1])
