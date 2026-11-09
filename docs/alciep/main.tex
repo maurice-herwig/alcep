@@ -37,12 +37,12 @@ where $A\to\alpha\beta\in\Rules$ and $k$ is the index of the Earley set in
 which the item was introduced.  The item is complete if $\beta=\varepsilon$;
 otherwise, the symbol immediately after the dot is its expectation.
 
-An Earley set $E_i\subseteq\Items$ is the set of items reachable after the
-parser has performed $i$ correction operations.  The input position is kept
+An Earley set $E_i\subseteq\Items$ is the set of items associated with
+position $i$ in the corrected target word.  The input position is kept
 separately as $j$, the index of the next unread input token.  Let
 \[
   Q_i=\{A\in\Terminals\mid
-       [X\to\alpha\,\bullet\,A\beta,j]\in E_i\}
+       [X\to\alpha\,\bullet\,A\beta,k]\in E_i\}
 \]
 be the set of terminals expected by $E_i$.
 
@@ -58,7 +58,7 @@ be the set of terminals expected by $E_i$.
   which do not consume input and do not append an edit operation:
   \begin{itemize}[leftmargin=*]
     \item \textbf{Predictor:} If
-    $[A\to\alpha\,\bullet\,B\beta,j]\in E_i$ and
+    $[A\to\alpha\,\bullet\,B\beta,k]\in E_i$ and
     $B\to\delta\in\Rules$ for $B\in\NonTerminals$, then add
     \[
       [B\to\bullet\,\delta,i]\in E_i.
@@ -66,9 +66,9 @@ be the set of terminals expected by $E_i$.
 
     \item \textbf{Completion:} If
     $[B\to\delta\,\bullet,k]\in E_i$ and
-    $[A\to\alpha\,\bullet\,B\beta,j]\in E_k$, then add
+    $[A\to\alpha\,\bullet\,B\beta,h]\in E_k$, then add
     \[
-      [A\to\alpha B\,\bullet\,\beta,j]\in E_i.
+      [A\to\alpha B\,\bullet\,\beta,h]\in E_i.
     \]
   \end{itemize}
   After this closure, the admissible interactive transitions are:

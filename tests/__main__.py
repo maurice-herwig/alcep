@@ -24,6 +24,7 @@ except ImportError:
 # from .test_grammars import TestPythonG, TestConfigG
 
 from .test_logger import Testlogger
+from .test_alciep import TestALCIEP
 
 from .test_parser import *  # We define __all__ to list which TestSuites to run
 

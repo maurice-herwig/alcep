@@ -5,6 +5,7 @@ from lark.parsers.grammar_analysis import GrammarAnalyzer
 from lark.parsers.earley_forest import StableSymbolNode, SymbolNode
 from lark.parsers.earley_common import Item
 from lark.grammar import NonTerminal, Terminal
+from lark.exceptions import GrammarError
 from collections import deque
 
 if TYPE_CHECKING:
@@ -51,11 +52,41 @@ class BaseParser:
         # self.NULLABLE := The set of non-terminals from which we can derive the empty string 𝜖.
         self.NULLABLE = analysis.NULLABLE
 
+        # Compute the productive non-terminals independently of FIRST.  A
+        # non-empty FIRST set alone is not sufficient: for example,
+        # A -> "a" A has FIRST(A) = {"a"} but derives no finite word.
+        productive_non_terminals = set()
+        changed = True
+        while changed:
+            changed = False
+            for rule in parser_conf.rules:
+                if (rule.origin not in productive_non_terminals
+                        and all(symbol.is_term or symbol in productive_non_terminals
+                                for symbol in rule.expansion)):
+                    productive_non_terminals.add(rule.origin)
+                    changed = True
+
+        def is_productive_rule(rule):
+            return (rule.origin in productive_non_terminals
+                    and all(symbol.is_term or symbol in productive_non_terminals
+                            for symbol in rule.expansion))
+
+        self.productive_rules = {
+            rule for rule in parser_conf.rules if is_productive_rule(rule)
+        }
+
+        if any(not any(rule.origin == NonTerminal(start)
+                       for rule in self.productive_rules)
+               for start in parser_conf.start):
+            raise GrammarError(
+                "At least one start symbol of the ALCIEP grammar is not productive."
+            )
+
         # Compute the set of terminals and non-terminals
         # These could be moved to the grammar analyzer. Pre-computing these is *much* faster than
         # the slow 'isupper' in is_terminal.
-        self.TERMINALS = {sym for r in parser_conf.rules for sym in r.expansion if sym.is_term}
-        self.NON_TERMINALS = {sym for r in parser_conf.rules for sym in r.expansion if not sym.is_term}
+        self.TERMINALS = {sym for r in self.productive_rules for sym in r.expansion if sym.is_term}
+        self.NON_TERMINALS = {sym for r in self.productive_rules for sym in r.expansion if not sym.is_term}
 
         # Create a dictionary for all productions rules in the form
         # key: non-terminal S value: list of rules S -> xyz
@@ -64,7 +95,10 @@ class BaseParser:
         # Iterate over all production rules to create the set of predictions
         for rule in parser_conf.rules:
             if rule.origin not in self.predictions:
-                self.predictions[rule.origin] = [x.rule for x in analysis.expand_rule(rule.origin)]
+                self.predictions[rule.origin] = [
+                    x.rule for x in analysis.expand_rule(rule.origin)
+                    if x.rule in self.productive_rules
+                ]
 
             # Detect if any rules/terminals have priorities set.
             # The all correction earley parser don't support priorities.
@@ -87,7 +121,7 @@ class BaseParser:
 
             if item.is_complete:
                 if item.start == i:
-                    held_completions[item.rule.origin] = item
+                    held_completions.setdefault(item.rule.origin, set()).add(item)
 
                 originators = [originator for originator in earley_sets[item.start]
                                if originator.expect is not None and originator.expect == item.s]
@@ -108,7 +142,7 @@ class BaseParser:
                         if new_item.expect in self.TERMINALS:
                             to_scan.setdefault(new_item.expect, self.Set()).add(new_item)
 
-                if item.expect in held_completions:
+                for _completion in held_completions.get(item.expect, ()):
                     new_item = item.advance()
                     if new_item not in current_earley_set:
                         current_earley_set.add(new_item)
@@ -230,16 +264,20 @@ class BaseParser:
                 end_correction = True
                 continue
 
-            earley_sets.append(self.Set())
-
             if type(chosen_edit) in [ReadOperation, ReplacementOperation, DeletionOperation]:
                 j += 1
 
-            i += 1
             # Apply deletion operation
             if type(chosen_edit) == DeletionOperation:
-                earley_sets[i] = earley_sets[i - 1]
+                # Deletion consumes an input token but does not produce a
+                # token in the corrected word. Therefore, the target-word
+                # position i and the current Earley set remain unchanged.
                 continue
+
+            # Read, replacement, and insertion each produce one token in the
+            # corrected word and therefore advance the target-word position.
+            earley_sets.append(self.Set())
+            i += 1
 
             new_to_scan = {}
             # Apply read, replacement or insertion operation
