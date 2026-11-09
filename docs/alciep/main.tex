@@ -1,0 +1,114 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+
+\newtheorem{definition}{Definition}
+
+\newcommand{\Grammar}{\mathcal{G}}
+\newcommand{\NonTerminals}{\mathcal{N}}
+\newcommand{\Terminals}{\Sigma}
+\newcommand{\Rules}{\mathcal{P}}
+\newcommand{\Items}{\mathcal{I}}
+\newcommand{\Edits}{\mathcal{O}}
+
+\title{A Formal Definition of ALCIEP}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+Let
+\[
+  \Grammar=(\NonTerminals,\Terminals,\Rules,S)
+\]
+be a context-free grammar and let
+$w=t_1\cdots t_n\in\Terminals^{*}$ be the input token sequence.
+
+An Earley item has the form
+\[
+  [A\to\alpha\,\bullet\,\beta, k],
+\]
+where $A\to\alpha\beta\in\Rules$ and $k$ is the index of the Earley set in
+which the item was introduced.  The item is complete if $\beta=\varepsilon$;
+otherwise, the symbol immediately after the dot is its expectation.
+
+An Earley set $E_i\subseteq\Items$ is the set of items reachable after the
+parser has performed $i$ correction operations.  The input position is kept
+separately as $j$, the index of the next unread input token.  Let
+\[
+  Q_i=\{A\in\Terminals\mid
+       [X\to\alpha\,\bullet\,A\beta,j]\in E_i\}
+\]
+be the set of terminals expected by $E_i$.
+
+\begin{definition}[All-Correction Interactive Earley Parser]
+  The All-Correction Interactive Earley Parser (ALCIEP) is the transition
+  system whose configurations are tuples
+  \[
+    \langle E_i,j,\gamma\rangle,
+  \]
+  where $E_i$ is the current Earley set, $j$ is the index of the next unread
+  input token, and $\gamma\in\Edits^{*}$ is the sequence of operations
+  selected so far.  The Earley set is closed under the following two rules,
+  which do not consume input and do not append an edit operation:
+  \begin{itemize}[leftmargin=*]
+    \item \textbf{Predictor:} If
+    $[A\to\alpha\,\bullet\,B\beta,j]\in E_i$ and
+    $B\to\delta\in\Rules$ for $B\in\NonTerminals$, then add
+    \[
+      [B\to\bullet\,\delta,i]\in E_i.
+    \]
+
+    \item \textbf{Completion:} If
+    $[B\to\delta\,\bullet,k]\in E_i$ and
+    $[A\to\alpha\,\bullet\,B\beta,j]\in E_k$, then add
+    \[
+      [A\to\alpha B\,\bullet\,\beta,j]\in E_i.
+    \]
+  \end{itemize}
+  After this closure, the admissible interactive transitions are:
+  \begin{itemize}[leftmargin=*]
+    \item \textbf{Read:} If $j<n$ and $t_{j+1}$ matches $A\in Q_i$, advance
+    the dot over $A$ and consume $t_{j+1}$:
+    \[
+      \langle E_i,j,\gamma\rangle
+      \xrightarrow{\mathsf{read}(t_{j+1})}
+      \langle E_{i+1},j+1,\gamma\mathsf{read}(t_{j+1})\rangle.
+    \]
+
+    \item \textbf{Replacement:} If $j<n$ and $t_{j+1}$ does not match
+    $A\in Q_i$, advance the dot over $A$ and consume $t_{j+1}$:
+    \[
+      \langle E_i,j,\gamma\rangle
+      \xrightarrow{\mathsf{replace}(t_{j+1},A)}
+      \langle E_{i+1},j+1,
+        \gamma\mathsf{replace}(t_{j+1},A)\rangle.
+    \]
+
+    \item \textbf{Deletion:} If $j<n$, consume $t_{j+1}$ without advancing
+    any Earley item:
+    \[
+      \langle E_i,j,\gamma\rangle
+      \xrightarrow{\mathsf{delete}(t_{j+1})}
+      \langle E_i,j+1,\gamma\mathsf{delete}(t_{j+1})\rangle.
+    \]
+
+    \item \textbf{Insertion:} For every $A\in Q_i$, advance the dot over
+    $A$ without consuming an input token:
+    \[
+      \langle E_i,j,\gamma\rangle
+      \xrightarrow{\mathsf{insert}(A)}
+      \langle E_{i+1},j,\gamma\mathsf{insert}(A)\rangle.
+    \]
+  \end{itemize}
+  A configuration is accepting if $j=n$ and $E_i$ contains a complete start
+  item $[S\to\alpha\,\bullet,0]$.  The sequence $\gamma$ of selected edit
+  operations is then the correction produced by ALCIEP.
+\end{definition}
+
+\end{document}

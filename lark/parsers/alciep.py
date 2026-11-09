@@ -76,6 +76,48 @@ class BaseParser:
         #    if term.priority:
         #        raise Exception("The all correction earley parser don't support priorities.")
 
+    def _complete_earley_set(self, i, earley_sets, to_scan):
+        """Close one Earley set under prediction and completion."""
+        held_completions = {}
+        current_earley_set = earley_sets[i]
+        items = deque(current_earley_set)
+
+        while items:
+            item = items.pop()
+
+            if item.is_complete:
+                if item.start == i:
+                    held_completions[item.rule.origin] = item
+
+                originators = [originator for originator in earley_sets[item.start]
+                               if originator.expect is not None and originator.expect == item.s]
+                for originator in originators:
+                    new_item = originator.advance()
+                    if new_item not in current_earley_set:
+                        current_earley_set.add(new_item)
+                        items.append(new_item)
+                        if new_item.expect in self.TERMINALS:
+                            to_scan.setdefault(new_item.expect, self.Set()).add(new_item)
+
+            elif item.expect in self.NON_TERMINALS:
+                for rule in self.predictions[item.expect]:
+                    new_item = Item(rule, 0, i)
+                    if new_item not in current_earley_set:
+                        current_earley_set.add(new_item)
+                        items.append(new_item)
+                        if new_item.expect in self.TERMINALS:
+                            to_scan.setdefault(new_item.expect, self.Set()).add(new_item)
+
+                if item.expect in held_completions:
+                    new_item = item.advance()
+                    if new_item not in current_earley_set:
+                        current_earley_set.add(new_item)
+                        items.append(new_item)
+                        if new_item.expect in self.TERMINALS:
+                            to_scan.setdefault(new_item.expect, self.Set()).add(new_item)
+
+        return to_scan
+
     def parse(self, lexer, start):
         """
         The parse functionality of the all correction interactive earley parser.
@@ -114,6 +156,10 @@ class BaseParser:
                     to_scan[item.expect].add(item)
                 else:
                     to_scan[item.expect] = self.Set([item])
+
+        # The initial set must already be closed under prediction and
+        # completion before the first interactive choice is offered.
+        to_scan = self._complete_earley_set(i=0, earley_sets=earley_sets, to_scan=to_scan)
 
         # The index of the current Earley Set
         i = 0
@@ -219,72 +265,10 @@ class BaseParser:
                             new_to_scan[new_item.expect] = self.Set([new_item])
             to_scan = new_to_scan
 
-            # Complete the earley set by predict and complete operations
-            # Held Completions (the set H).
-            held_completions = {}
-            # Get a pointer to the current computed earley set
-            current_earley_set = earley_sets[i]
-
-            # Init a queue with all items of the current earley set (the set R).
-            items = deque(current_earley_set)
-
-            # iterate over all earley items in queue (all items of the current earley set).
-            while items:
-                item = items.pop()
-
-                # The earley completer rule
-                if item.is_complete:
-
-                    # Regular Earley completer
-                    # If the also starts at this earley set, we need add this item to the set of held_completions,
-                    # because all Earley items that are subsequently calculated for the current earley set can possibly
-                    # be completed with the final item.
-                    if item.start == i:
-                        held_completions[item.rule.origin] = item.node
-
-                    # Get for the current final item [B -> ... bullet, j, u] all items in the earley set j
-                    # of the form [A -> ... bullet B ...]
-                    originators = [originator for originator in earley_sets[item.start] if
-                                   originator.expect is not None and originator.expect == item.s]
-
-                    for originator in originators:
-                        # Create a new item by shift the bullet point one postion to the right of the originator item
-                        new_item = originator.advance()
-                        if new_item not in current_earley_set:
-                            current_earley_set.add(new_item)
-                            items.append(new_item)
-                            if new_item.expect in self.TERMINALS:
-                                if new_item.expect in new_to_scan:
-                                    new_to_scan[new_item.expect].add(new_item)
-                                else:
-                                    new_to_scan[new_item.expect] = self.Set([new_item])
-
-                # The earley predictor rule
-                elif item.expect in self.NON_TERMINALS:
-
-                    # Iterate over all rule with the non-terminal, that we expect as next, on the left.
-                    for rule in self.predictions[item.expect]:
-                        new_item = Item(rule, 0, i)
-                        if new_item not in current_earley_set:
-                            current_earley_set.add(new_item)
-                            items.append(new_item)
-                            if new_item.expect in self.TERMINALS:
-                                if new_item.expect in new_to_scan:
-                                    new_to_scan[new_item.expect].add(new_item)
-                                else:
-                                    new_to_scan[new_item.expect] = self.Set([new_item])
-
-                    # Process any held completions (H).
-                    if item.expect in held_completions:
-                        new_item = item.advance()
-                        if new_item not in current_earley_set:
-                            current_earley_set.add(new_item)
-                            items.append(new_item)
-                            if new_item.expect in self.TERMINALS:
-                                if new_item.expect in new_to_scan:
-                                    new_to_scan[new_item.expect].add(new_item)
-                                else:
-                                    new_to_scan[new_item.expect] = self.Set([new_item])
+            # Complete the current Earley set by prediction and completion.
+            new_to_scan = self._complete_earley_set(
+                i=i, earley_sets=earley_sets, to_scan=new_to_scan
+            )
 
         # Return the computed correction
         return word_ordered_correction.WordOrderedCorrection(correction[:-1])
